@@ -51,8 +51,7 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 /* AUTH MODAL */
 #auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
 #auth-overlay.open{opacity:1;pointer-events:all}
-.auth-modal{background:var(--cream);border-radius:20px;padding:40px 44px;width:92%;max-width:420px;position:relative;animation:authPop .26s ease}
-@keyframes authPop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+.auth-modal{background:var(--cream);border-radius:20px;padding:40px 44px;width:92%;max-width:420px;position:relative;animation:popIn .26s ease}
 .auth-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:22px;color:var(--muted);line-height:1;cursor:pointer}
 .auth-tabs{display:flex;border-bottom:2px solid rgba(0,0,0,.08);margin-bottom:28px}
 .auth-tab{flex:1;padding:10px 0;background:none;border:none;font-family:'Actor',sans-serif;font-size:17px;letter-spacing:1px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;cursor:pointer}
@@ -347,7 +346,7 @@ footer{background:rgba(56,43,35,.93);padding:58px 52px 0}
   .co-modal{padding:24px 16px;border-radius:14px}
   .co-row-2{grid-template-columns:1fr}
   .co-card-preview{padding:18px 18px 14px}
-  .auth-modal{padding:28px 20px}
+  .auth-modal{padding:28px 18px;width:94vw}
 }
 
 /* ── UNIFIED TYPE SYSTEM ────────────────────────────────── */
@@ -666,16 +665,6 @@ button,.btn-cta,.btn-outline,.auth-btn,.auth-google,
   transition:background .2s,color .2s;cursor:pointer;
 }
 .btn-logout:hover { background:var(--red);color:#fff; }
-
-
-  .svc-circle{width:90px;height:90px}
-  .svc-item{width:90px}
-  .modal,.svc-popup{padding:20px 14px}
-  .modal-hd h2{font-size:20px}
-  header{height:80px;padding:0 16px}
-  *{scroll-margin-top:84px}
-  .h-logo img{height:44px}
-  .contact-info-row{flex-direction:column;gap:12px}
 
 
 </style>
