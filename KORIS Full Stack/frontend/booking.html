@@ -180,7 +180,7 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 .contact-rows{display:flex;flex-direction:column;gap:7px}
 .contact-rows p{font-size:14px;display:flex;align-items:center;gap:8px}
 .contact-rows a{color:var(--red);text-decoration:underline}
-.hours-box{font-family:'Inter',sans-serif;font-size:11px;font-weight:400;line-height:1.4;color:var(--muted);display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:0}
+.hours-box{font-family:'Inter',sans-serif;font-size:11px;font-weight:400;line-height:1.4;color:var(--muted);display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:0;margin-left: auto ;}
 
 /* SHOP */
 .shop-sec{background:rgba(242,226,208,.38);padding:72px 44px}
@@ -725,47 +725,38 @@ button,.btn-cta,.btn-outline,.auth-btn,.auth-google,
 
     <div class="svc-item sel" onclick="svcPick(this);openSvc('haircut')">
       <div class="svc-circle">
-        <img src="https://www.figma.com/api/mcp/asset/814deef8-4f68-4f3e-8945-c139019a928b" alt="Haircut"/>
+        <img src="images/Haircut.png" alt="Haircut"/>
       </div>
       <div class="svc-lbl">Haircut</div>
     </div>
 
     <div class="svc-item" onclick="svcPick(this);openSvc('beard')">
       <div class="svc-circle">
-        <img src="https://www.figma.com/api/mcp/asset/23502fb4-ac98-46ba-ad8e-a98552c2b1a5" alt="Beard Grooming"/>
+        <img src="images/Beard.png" alt="Beard Grooming"/>
       </div>
       <div class="svc-lbl">Beard Grooming</div>
     </div>
 
     <div class="svc-item" onclick="svcPick(this);openSvc('styling')">
       <div class="svc-circle">
-        <img src="https://www.figma.com/api/mcp/asset/aad4bbb9-c45c-4be1-abc1-b11301f7cb83" alt="Styling"/>
+        <img src="images/Styling.png" alt="Styling"/>
       </div>
       <div class="svc-lbl">Styling &amp; Care</div>
     </div>
 
     <div class="svc-item" onclick="svcPick(this);openSvc('teen')">
       <div class="svc-circle">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 22 Q20 10 32 10 Q44 10 44 22 L44 24 Q42 18 32 18 Q22 18 20 24 Z" fill="#7F253E"/>
-          <path d="M20 22 L20 26 Q21 20 28 19 L32 18 Q24 19 20 22Z" fill="#530303"/>
-          <ellipse cx="32" cy="30" rx="11" ry="12" fill="#F2D5B8"/>
-          <circle cx="28" cy="28" r="1.5" fill="#2a0a00"/>
-          <circle cx="36" cy="28" r="1.5" fill="#2a0a00"/>
-          <path d="M28.5 35 Q32 38.5 35.5 35" stroke="#b8784a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-          <rect x="28" y="42" width="8" height="6" rx="2" fill="#F2D5B8"/>
-          <path d="M14 64 Q14 54 24 51 L28 48 Q30 53 32 53 Q34 53 36 48 L40 51 Q50 54 50 64Z" fill="#7F253E"/>
-          <path d="M28 51 L32 56 L36 51" stroke="rgba(255,252,247,0.5)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <img src="images/Teen.png" alt="Teen"/>
       </div>
-      <div class="svc-lbl">Teen</div>
+      <div class="svc-lbl">Teen Cuts</div>
     </div>
+
 
     <div class="svc-item" onclick="svcPick(this);openSvc('kids')">
       <div class="svc-circle">
-        <img src="https://www.figma.com/api/mcp/asset/cbf63b08-7ac2-4296-aa9f-c3400d6a835e" alt="Kids"/>
+        <img src="images/kid.png" alt="Kids"/>
       </div>
-      <div class="svc-lbl">Kids</div>
+      <div class="svc-lbl">Kid Cuts</div>
     </div>
 
   </div>
@@ -810,22 +801,22 @@ button,.btn-cta,.btn-outline,.auth-btn,.auth-google,
   <h2 class="sec-h">Our Barbers</h2>
   <div class="brb-grid">
     <div class="brb-card">
-      <img src="https://images.unsplash.com/photo-1559599101-f09722fb4948?w=700&q=85" alt="Alex P."/>
+      <img src="images/barber1.png" alt="Alex P."/>
       <div class="brb-name">Alex P.</div>
       <div class="brb-role">Senior Barber &middot; 8 yrs</div>
     </div>
     <div class="brb-card">
-      <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=700&q=85" alt="Nikos S."/>
+      <img src="images/barber2.png" alt="Nikos S."/>
       <div class="brb-name">Nikos S.</div>
       <div class="brb-role">Master Barber &middot; 12 yrs</div>
     </div>
     <div class="brb-card">
-      <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=700&q=85" alt="Dimitris K."/>
-      <div class="brb-name">Dimitris K.</div>
+      <img src="images/barber3.png" alt="Aggeliki K."/>
+      <div class="brb-name">Aggeliki K.</div>
       <div class="brb-role">Style Specialist &middot; 5 yrs</div>
     </div>
     <div class="brb-card">
-      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=700&q=85" alt="Giorgos L."/>
+      <img src="images/barber4.png" alt="Giorgos L."/>
       <div class="brb-name">Giorgos L.</div>
       <div class="brb-role">Junior Barber &middot; 3 yrs</div>
     </div>
@@ -1298,11 +1289,11 @@ function svcPick(el){
 }
 
 var SVC_DATA={
-  haircut:{title:'Haircut',price:'from €15',icon:'https://www.figma.com/api/mcp/asset/814deef8-4f68-4f3e-8945-c139019a928b',desc:'A precise, tailored haircut crafted to suit your face shape, hair texture, and personal style.',includes:['Personalised style consultation','Shampoo & scalp massage','Precision cut & scissor finish','Hot towel neck finish','Styling & product application'],duration:'30 – 45 min'},
-  beard:{title:'Beard Grooming',price:'from €12',icon:'https://www.figma.com/api/mcp/asset/23502fb4-ac98-46ba-ad8e-a98552c2b1a5',desc:'From a clean shave to a sculpted beard, our barbers shape, trim and define your facial hair to perfection.',includes:['Beard shape & line-up','Hot towel softening treatment','Straight-razor edge clean up','Moisturising beard oil application','Styling advice & product tips'],duration:'20 – 35 min'},
-  styling:{title:'Styling & Care',price:'from €18',icon:'https://www.figma.com/api/mcp/asset/aad4bbb9-c45c-4be1-abc1-b11301f7cb83',desc:'A full grooming session combining a haircut with a professional blowdry and styling using premium products.',includes:['Precision haircut','Professional blowdry & diffuse','Product selection tailored to your hair','Texture & volume finishing','Long-lasting hold styling'],duration:'45 – 60 min'},
-  teen:{title:'Teen Cut',price:'from €12',icon:null,iconSvg:'<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M20 22 Q20 10 32 10 Q44 10 44 22 L44 24 Q42 18 32 18 Q22 18 20 24 Z" fill="#7F253E"/><ellipse cx="32" cy="30" rx="11" ry="12" fill="#F2D5B8"/><circle cx="28" cy="28" r="1.5" fill="#2a0a00"/><circle cx="36" cy="28" r="1.5" fill="#2a0a00"/><path d="M28.5 35 Q32 38.5 35.5 35" stroke="#b8784a" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M14 64 Q14 54 24 51 L28 48 Q30 53 32 53 Q34 53 36 48 L40 51 Q50 54 50 64Z" fill="#7F253E"/></svg>',desc:'A fresh, modern cut for teens aged 13–17. We keep up with the latest trends so your teen walks out confident.',includes:['Style consultation with the teen','Trendy cut tailored to their style','Shampoo & blowdry','Neck & sideburn clean up','Styling tips for home'],duration:'25 – 40 min'},
-  kids:{title:"Kids' Cut",price:'from €10',icon:'https://www.figma.com/api/mcp/asset/cbf63b08-7ac2-4296-aa9f-c3400d6a835e',desc:"A fun and stress-free haircut for children up to 12 years old. Our patient barbers make sure kids feel comfortable.",includes:['Friendly, relaxed environment','Cut suited to the child preference','Gentle shampoo if needed','Neck tidy up','Small treat for our youngest customers'],duration:'20 – 30 min'}
+  haircut:{title:'Haircut',price:'from €15',icon:'images/Haircut.png',desc:'A precise, tailored haircut crafted to suit your face shape, hair texture, and personal style.',includes:['Personalised style consultation','Shampoo & scalp massage','Precision cut & scissor finish','Hot towel neck finish','Styling & product application'],duration:'30 – 45 min'},
+  beard:{title:'Beard Grooming',price:'from €12',icon:'images/Beard.png',desc:'From a clean shave to a sculpted beard, our barbers shape, trim and define your facial hair to perfection.',includes:['Beard shape & line-up','Hot towel softening treatment','Straight-razor edge clean up','Moisturising beard oil application','Styling advice & product tips'],duration:'20 – 35 min'},
+  styling:{title:'Styling & Care',price:'from €18',icon:'images/Styling.png',desc:'A full grooming session combining a haircut with a professional blowdry and styling using premium products.',includes:['Precision haircut','Professional blowdry & diffuse','Product selection tailored to your hair','Texture & volume finishing','Long-lasting hold styling'],duration:'45 – 60 min'},
+  teen:{title:'Teen Cut',price:'from €12',icon:'images/Teen.png',desc:'A fresh, modern cut for teens aged 13–17. We keep up with the latest trends so your teen walks out confident.',includes:['Style consultation with the teen','Trendy cut tailored to their style','Shampoo & blowdry','Neck & sideburn clean up','Styling tips for home'],duration:'25 – 40 min'},
+  kids:{title:"Kids' Cut",price:'from €10',icon:'images/Kid.png',desc:"A fun and stress-free haircut for children up to 12 years old. Our patient barbers make sure kids feel comfortable.",includes:['Friendly, relaxed environment','Cut suited to the child preference','Gentle shampoo if needed','Neck tidy up','Small treat for our youngest customers'],duration:'20 – 30 min'}
 };
 
 function openSvc(key){
