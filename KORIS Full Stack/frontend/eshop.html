@@ -737,6 +737,25 @@ body{font-family:'Inter',sans-serif}
 .co-dot.on{background:var(--dred)}
 .co-dot.done{background:var(--red)}
 
+/* ── FAVOURITES DRAWER ──────────────────────────────── */
+#fav-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:190;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s
+}
+#fav-overlay.open{opacity:1;pointer-events:all}
+#fav-drawer{
+  position:fixed;top:0;right:-400px;width:380px;height:100dvh;
+  background:var(--cream);z-index:200;
+  padding:28px 24px;
+  transition:right .35s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  box-shadow:-4px 0 24px rgba(0,0,0,.12)
+}
+#fav-drawer.open{right:0}
+
 </style>
 </head>
 <body>
@@ -1079,6 +1098,20 @@ body{font-family:'Inter',sans-serif}
   </div>
 </div>
 
+<!-- FAVOURITES DRAWER -->
+<div id="fav-overlay" onclick="closeFavDrawer()"></div>
+<div id="fav-drawer">
+  <div class="cart-hd">
+    <h3>My Favourites</h3>
+    <button class="cart-close" onclick="closeFavDrawer()">&#10005;</button>
+  </div>
+  <div id="fav-list" class="cart-items">
+    <div class="cart-empty">
+      <p>No favourites yet.<br/>Tap ♡ on any product to save it here.</p>
+    </div>
+  </div>
+</div>
+
 <!-- CHECKOUT MODAL -->
 <div id="checkout-overlay">
   <div class="co-modal">
@@ -1406,17 +1439,12 @@ function removeFav(removeBtn, productName){
 
 function openFavDrawer(){
   updateFavDrawer();
-  var drawer = document.getElementById('fav-drawer');
-  var overlay = document.getElementById('fav-overlay');
-  if(drawer){ drawer.style.right='0'; drawer.classList.add('open'); }
-  if(overlay) overlay.style.display='block';
+  document.getElementById('fav-drawer').classList.add('open');
+  document.getElementById('fav-overlay').classList.add('open');
 }
-
 function closeFavDrawer(){
-  var drawer = document.getElementById('fav-drawer');
-  var overlay = document.getElementById('fav-overlay');
-  if(drawer){ drawer.style.right='-100%'; drawer.classList.remove('open'); }
-  if(overlay) overlay.style.display='none';
+  document.getElementById('fav-drawer').classList.remove('open');
+  document.getElementById('fav-overlay').classList.remove('open');
 }
 
 // ── CART ─────────────────────────────────────────────
