@@ -2537,8 +2537,7 @@ function renderAuthModal(){
     document.getElementById('profile-initial').textContent=currentUser.name.charAt(0).toUpperCase();
   }
 }
-function doLogin(){
-  async function doLogin(){
+async function doLogin(){
   var email = document.getElementById('login-email').value.trim();
   var pass = document.getElementById('login-pass').value;
   if(!email || !pass){ showToast('Please fill in all fields'); return; }
@@ -2553,14 +2552,13 @@ function doLogin(){
     authToken = data.token;
     currentUser = { name: data.user.name, email: data.user.email };
     renderAuthModal();
+    loadUserData();
     showToast('Welcome back, ' + currentUser.name + '!');
   } catch(err) {
     showToast('Connection error. Try again.');
   }
 }
-}
-function doRegister(){
-  async function doRegister(){
+async function doRegister(){
   var name = document.getElementById('reg-name').value.trim();
   var email = document.getElementById('reg-email').value.trim();
   var pass = document.getElementById('reg-pass').value;
@@ -2581,7 +2579,6 @@ function doRegister(){
   } catch(err) {
     showToast('Connection error. Try again.');
   }
-}
 }
 function doGoogleLogin(){
   currentUser={name:'Google User',email:'google.user'};
@@ -2814,20 +2811,30 @@ function pickPill(btn,gid){
   document.getElementById(gid).querySelectorAll('.pill').forEach(function(b){b.classList.remove('on')});
   btn.classList.add('on');
 }
-function confirmBook(){
-  async function confirmBook(){
+async function confirmBook(){
   var svcEl = document.querySelector('#g1 .pill.on');
   var brbrEl = document.querySelector('#g2 .pill.on');
   var timeEl = document.querySelector('#g3 .pill.on');
+  
   var svcName = svcEl ? svcEl.textContent.trim() : 'Service';
   var brbrName = brbrEl ? brbrEl.textContent.trim() : 'Barber';
   var timeVal = timeEl ? timeEl.textContent.trim() : '—';
-  var calVal = document.getElementById('cal-display') ? document.getElementById('cal-display').textContent.trim() : '';
+
+  // --- THE DATE FIX IS HERE ---
+  // 1. Get the month and year ("March 2026")
+  var monthYear = document.getElementById('cal-display') ? document.getElementById('cal-display').textContent.trim() : '';
+  // 2. Get the specific day the user clicked on (the one with the 'on' class)
+  var dayEl = document.querySelector('#cal-grid .cd.on');
+  var day = dayEl ? dayEl.textContent.trim() : '';
+  // 3. Combine them together ("28 March 2026")
+  var calVal = day ? (day + ' ' + monthYear) : monthYear;
+  // ----------------------------
+
   var name = document.getElementById('bf-name') ? document.getElementById('bf-name').value.trim() : '';
 
   if(authToken){
     try {
-      await fetch(API + '/api/bookings', {
+      var res = await fetch(API + '/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -2840,6 +2847,9 @@ function confirmBook(){
           time: timeVal
         })
       });
+      if(res.ok) {
+        await loadUserData(); // Refresh profile with the new booking
+      }
     } catch(err) {
       console.log('Booking save error:', err);
     }
@@ -2854,10 +2864,52 @@ function confirmBook(){
       (timeVal !== '—' ? '<div class="confirm-row"><div class="confirm-row-icon">🕐</div><span>' + timeVal + '</span></div>' : '') +
       (name ? '<div class="confirm-row"><div class="confirm-row-icon">✦</div><span>' + name + '</span></div>' : '');
   }
-  var meta = brbrName + (calVal ? ' · ' + calVal : '') + (timeVal !== '—' ? ' · ' + timeVal : '');
-  addBookingToProfile(svcName, meta);
+  
   goStep(5);
 }
+
+async function coPlaceOrder(){
+  var cnum = document.getElementById('co-cnum').value.replace(/\s/g,'');
+  var exp = document.getElementById('co-exp').value;
+  var cvv = document.getElementById('co-cvv').value;
+  if(cnum.length < 16 || !exp.includes('/') || cvv.length < 3){
+    showToast('Please enter valid card details.');
+    return;
+  }
+
+  var num = '#KR-' + (Math.floor(Math.random() * 9000) + 1000);
+  var itemsStr = cart.map(function(ci){ return ci.name + ' ×' + ci.qty; }).join(' · ');
+  var total = cart.reduce(function(s, ci){ return s + ci.price * ci.qty; }, 0);
+
+  if(authToken){
+    try {
+      await fetch(API + '/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + authToken
+        },
+        body: JSON.stringify({
+          items: cart.map(function(ci){
+            return { name: ci.name, price: ci.price, qty: ci.qty, img: ci.img };
+          }),
+          total: total
+        })
+      });
+    } catch(err){
+      console.log('Order save error:', err);
+    }
+  }
+
+  addOrderToProfile(num, itemsStr, total);
+  [1,2,3].forEach(function(i){ document.getElementById('co-panel-'+i).style.display='none'; });
+  [1,2,3].forEach(function(i){
+    document.getElementById('cstep-'+i).classList.remove('on');
+    document.getElementById('cstep-'+i).classList.add('done');
+  });
+  document.getElementById('co-panel-conf').style.display = 'block';
+  document.getElementById('co-conf-num').textContent = num;
+  cart = []; renderCart();
 }
 function addBookingToProfile(service,meta){
   var list=document.getElementById('booking-list');
@@ -2927,7 +2979,100 @@ function buildCal(){
   }
 }
 function calMove(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++;}else if(calMonth<0){calMonth=11;calYear--;}buildCal();}
+// --- NEW DATA FETCHING FUNCTIONS ---
+async function loadUserData() {
+  if(!authToken) return;
+  try {
+    // 1. Fetch real Bookings
+    var resBookings = await fetch(API + '/api/bookings/my', {
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if(resBookings.ok) {
+      var bookings = await resBookings.json();
+      renderBookings(bookings);
+    }
+    // 2. Fetch real Orders
+    var resOrders = await fetch(API + '/api/orders/my', {
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if(resOrders.ok) {
+      var orders = await resOrders.json();
+      renderOrders(orders);
+    }
+  } catch(err) {
+    console.log('Failed to load user data', err);
+  }
+}
 
+function renderBookings(bookings) {
+  var list = document.querySelector('#profile-bookings .booking-list');
+  if(!list) return;
+  list.innerHTML = ''; // Clear the fake hardcoded bookings
+  if(bookings.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:14px;padding:20px 0">No bookings found.</p>';
+    return;
+  }
+  bookings.forEach(function(b) {
+    var card = document.createElement('div');
+    card.className = 'booking-card'; 
+    var meta = b.barber + ' · ' + b.date + ' · ' + b.time;
+    card.innerHTML = '<div class="booking-status upcoming">' + (b.status || 'Confirmed') + '</div>'
+      + '<div class="booking-service">' + b.service + '</div>'
+      + '<div class="booking-meta">' + meta + '</div>'
+      + '<button class="booking-cancel" onclick="cancelBookingAPI(\''+b._id+'\')">Cancel</button>';
+    list.appendChild(card);
+  });
+}
+
+function renderOrders(orders) {
+  var list = document.querySelector('#profile-orders .order-list');
+  if(!list) return;
+  list.innerHTML = ''; // Clear the fake hardcoded orders
+  if(orders.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:14px;padding:20px 0">No orders yet.</p>';
+    return;
+  }
+  orders.forEach(function(o) {
+    var card = document.createElement('div');
+    card.className = 'order-card';
+    var itemsStr = o.items.map(function(i){ return i.name + ' ×' + i.qty; }).join(' · ');
+    var d = new Date(o.createdAt);
+    var dateStr = d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+' '+d.getFullYear();
+    card.innerHTML = '<div class="order-hd"><span class="order-num">#KR-' + o._id.substring(o._id.length-4).toUpperCase() + '</span><span class="order-status delivered">' + (o.status || 'Processing') + '</span></div>'
+      + '<div class="order-items">' + itemsStr + '</div>'
+      + '<div class="order-total">Total: €' + o.total.toFixed(2) + ' · ' + dateStr + '</div>'
+      + '<button class="booking-cancel" style="margin-top:8px" onclick="cancelOrderAPI(\''+o._id+'\')">Cancel Order</button>';
+    list.appendChild(card);
+  });
+}
+
+async function cancelBookingAPI(id) {
+  if(!confirm("Are you sure you want to cancel this booking?")) return;
+  try {
+    var res = await fetch(API + '/api/bookings/' + id, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if(res.ok) {
+      showToast('Booking cancelled.');
+      loadUserData(); // Refresh the list
+    }
+  } catch(err) { console.error(err); }
+}
+
+async function cancelOrderAPI(id) {
+  if(!confirm("Are you sure you want to cancel this order?")) return;
+  try {
+    var res = await fetch(API + '/api/orders/' + id, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if(res.ok) {
+      showToast('Order cancelled.');
+      loadUserData(); // Refresh the list
+    }
+  } catch(err) { console.error(err); }
+}
 </script>
 </body>
 </html>
