@@ -765,10 +765,10 @@ body{font-family:'Inter',sans-serif}
 <div id="nav-drawer">
   <button class="nav-close" onclick="closeNav()">&#10005;</button>
   <div class="nav-links">
-    <a href="koris-barbershop.html" onclick="closeNav()">Home</a>
-    <a href="koris-barbershop.html#services" onclick="closeNav()">Services</a>
-    <a href="koris-barbershop.html#barbers" onclick="closeNav()">Our Barbers</a>
-    <a href="koris-barbershop.html#about" onclick="closeNav()">The Barbershop</a>
+    <a href="index.html" onclick="closeNav()">Home</a>
+    <a href="index.html#services" onclick="closeNav()">Services</a>
+    <a href="index.html#barbers" onclick="closeNav()">Our Barbers</a>
+    <a href="index.html#about" onclick="closeNav()">The Barbershop</a>
     <a href="eshop.html" class="active" onclick="closeNav()">e-Shop</a>
   </div>
 </div>
@@ -1046,9 +1046,9 @@ body{font-family:'Inter',sans-serif}
     </div>
     <div class="f-col">
       <h4>KORIS BRBS</h4>
-      <a href="koris-barbershop.html">Home</a>
-      <a href="koris-barbershop.html#barbers">Barbers</a>
-      <a href="koris-barbershop.html#services">Services</a>
+      <a href="index.html">Home</a>
+      <a href="index.html#barbers">Barbers</a>
+      <a href="index.html#services">Services</a>
       <a href="#" onclick="goToShopTop();return false">e-Shop</a>
     </div>
     <div class="f-col">
@@ -1336,6 +1336,9 @@ body{font-family:'Inter',sans-serif}
 <div id="toast"></div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const API = 'http://localhost:5000';
+var authToken = null;
+
 // ── NAV ─────────────────────────────────────────────
 function openNav(){document.getElementById('nav-drawer').classList.add('open');document.getElementById('nav-overlay').classList.add('open')}
 function closeNav(){document.getElementById('nav-drawer').classList.remove('open');document.getElementById('nav-overlay').classList.remove('open')}
@@ -1488,6 +1491,56 @@ function renderCart(){
   badge.textContent=totalQty;
 }
 
+// ── DATA FETCHING ────────────────────────
+async function loadUserData() {
+  if(!authToken) return;
+  try {
+    var resOrders = await fetch(API + '/api/orders/my', {
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if(resOrders.ok) {
+      var orders = await resOrders.json();
+      renderOrders(orders);
+    }
+  } catch(err) { console.log('Failed to load orders', err); }
+}
+
+function renderOrders(orders) {
+  var list = document.querySelector('#profile-orders .order-list');
+  if(!list) return;
+  list.innerHTML = ''; 
+  if(orders.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:14px;padding:20px 0">No orders yet.</p>';
+    return;
+  }
+  orders.forEach(function(o) {
+    var card = document.createElement('div');
+    card.className = 'order-card';
+    var itemsStr = o.items.map(function(i){ return i.name + ' ×' + i.qty; }).join(' · ');
+    var d = new Date(o.createdAt);
+    var dateStr = d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+' '+d.getFullYear();
+    card.innerHTML = '<div class="order-hd"><span class="order-num">#KR-' + o._id.substring(o._id.length-4).toUpperCase() + '</span><span class="order-status delivered">' + (o.status || 'Processing') + '</span></div>'
+      + '<div class="order-items">' + itemsStr + '</div>'
+      + '<div class="order-total">Total: €' + o.total.toFixed(2) + ' · ' + dateStr + '</div>'
+      + '<button class="booking-cancel" style="margin-top:8px" onclick="cancelOrderAPI(\''+o._id+'\')">Cancel Order</button>';
+    list.appendChild(card);
+  });
+}
+
+async function cancelOrderAPI(id) {
+  if(!confirm("Are you sure you want to cancel this order?")) return;
+  try {
+    var res = await fetch(API + '/api/orders/' + id, {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if(res.ok) {
+      showToast('Order cancelled.');
+      loadUserData(); 
+    }
+  } catch(err) { console.error(err); }
+}
+
 // ── AUTH ─────────────────────────────────────────────
 var currentUser=null;
 function openAuth(){
@@ -1511,30 +1564,55 @@ function renderAuthModal(){
     document.getElementById('profile-initial').textContent=currentUser.name.charAt(0).toUpperCase();
   }
 }
-function doLogin(){
-  var email=document.getElementById('login-email').value.trim();
-  var pass=document.getElementById('login-pass').value;
-  if(!email||!pass){showToast('Please fill in all fields');return}
-  currentUser={name:email.split(String.fromCharCode(64))[0],email:email};
-  renderAuthModal();
-  showToast('Welcome back, '+currentUser.name+'!');
+async function doLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-pass').value;
+  if(!email || !pass){ showToast('Please fill in all fields'); return; }
+  try {
+    var res = await fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: pass })
+    });
+    var data = await res.json();
+    if(!res.ok){ showToast(data.error || 'Login failed'); return; }
+    authToken = data.token;
+    currentUser = { name: data.user.name, email: data.user.email };
+    renderAuthModal();
+    loadUserData();
+    showToast('Welcome back, ' + currentUser.name + '!');
+  } catch(err) { showToast('Connection error. Try again.'); }
 }
-function doRegister(){
-  var name=document.getElementById('reg-name').value.trim();
-  var email=document.getElementById('reg-email').value.trim();
-  var pass=document.getElementById('reg-pass').value;
-  if(!name||!email||!pass){showToast('Please fill in all fields');return}
-  if(pass.length<8){showToast('Password must be at least 8 characters');return}
-  currentUser={name:name,email:email};
-  renderAuthModal();
-  showToast('Account created! Welcome, '+name+'!');
+async function doRegister(){
+  var name = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass = document.getElementById('reg-pass').value;
+  if(!name || !email || !pass){ showToast('Please fill in all fields'); return; }
+  if(pass.length < 8){ showToast('Password must be at least 8 characters'); return; }
+  try {
+    var res = await fetch(API + '/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, password: pass })
+    });
+    var data = await res.json();
+    if(!res.ok){ showToast(data.error || 'Registration failed'); return; }
+    authToken = data.token;
+    currentUser = { name: data.user.name, email: data.user.email };
+    renderAuthModal();
+    loadUserData();
+    showToast('Account created! Welcome, ' + name + '!');
+  } catch(err) { showToast('Connection error. Try again.'); }
 }
 function doGoogleLogin(){
   currentUser={name:'Google User',email:'google.user'};
   renderAuthModal();showToast('Signed in with Google!');
 }
 function doLogout(){
-  currentUser=null;renderAuthModal();closeAuth();
+  currentUser=null;
+  authToken=null; // Clear token on logout
+  renderAuthModal();
+  closeAuth();
   showToast('You have been signed out.');
 }
 
@@ -1594,24 +1672,59 @@ function fmtExp(el){
   el.value=v;
   document.getElementById('co-card-exp-display').textContent=v||'MM/YY';
 }
-function coPlaceOrder(){
-  var cnum=document.getElementById('co-cnum').value.replace(/\s/g,'');
-  var exp=document.getElementById('co-exp').value;
-  var cvv=document.getElementById('co-cvv').value;
-  if(cnum.length<16||!exp.includes('/')||cvv.length<3){showToast('Please enter valid card details.');return;}
-  // Generate order number
-  var num='#KR-'+(Math.floor(Math.random()*9000)+1000);
-  // Build items string from cart
-  var itemsStr=cart.map(function(ci){return ci.name+' \xd7'+ci.qty;}).join(' \u00b7 ');
-  var total=cart.reduce(function(s,ci){return s+ci.price*ci.qty;},0);
-  // Add to My Orders panel
-  addOrderToProfile(num, itemsStr, total);
-  // Show confirmation
-  [1,2,3].forEach(function(i){document.getElementById('co-panel-'+i).style.display='none';});
-  [1,2,3].forEach(function(i){document.getElementById('cstep-'+i).classList.remove('on');document.getElementById('cstep-'+i).classList.add('done');});
-  document.getElementById('co-panel-conf').style.display='block';
-  document.getElementById('co-conf-num').textContent=num;
-  cart=[];renderCart();
+async function coPlaceOrder(){
+  var cnum = document.getElementById('co-cnum').value.replace(/\s/g,'');
+  var exp = document.getElementById('co-exp').value;
+  var cvv = document.getElementById('co-cvv').value;
+  if(cnum.length < 16 || !exp.includes('/') || cvv.length < 3){
+    showToast('Please enter valid card details.');
+    return;
+  }
+
+  if(!authToken) {
+    showToast('Please Sign In to place an order.');
+    closeCheckout();
+    openAuth();
+    return; 
+  }
+
+  var num = '#KR-PENDING';
+  var total = cart.reduce(function(s, ci){ return s + ci.price * ci.qty; }, 0);
+
+  try {
+    var res = await fetch(API + '/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + authToken
+      },
+      body: JSON.stringify({
+        items: cart.map(function(ci){
+          return { name: ci.name, price: ci.price, qty: ci.qty, img: ci.img };
+        }),
+        total: total
+      })
+    });
+    
+    if(res.ok) {
+      var data = await res.json();
+      num = '#KR-' + data._id.substring(data._id.length-4).toUpperCase(); 
+      await loadUserData(); // Refresh profile with real data
+    }
+  } catch(err){
+    console.log('Order save error:', err);
+  }
+
+  [1,2,3].forEach(function(i){ document.getElementById('co-panel-'+i).style.display='none'; });
+  [1,2,3].forEach(function(i){
+    var step = document.getElementById('cstep-'+i);
+    if(step) { step.classList.remove('on'); step.classList.add('done'); }
+  });
+  
+  document.getElementById('co-panel-conf').style.display = 'block';
+  document.getElementById('co-conf-num').textContent = num;
+  cart = []; 
+  renderCart();
 }
 
 function addOrderToProfile(num, items, total){
