@@ -13,7 +13,9 @@ app.use(cors());
 app.use(express.json());
 
 // Serve frontend static files
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'KORIS Full Stack/frontend', 'index.html'));
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
