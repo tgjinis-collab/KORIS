@@ -13,18 +13,21 @@ app.use(cors());
 app.use(express.json());
 
 // Serve frontend static files
-app.get('/{*splat}', (req, res) => {
-  const filePath = path.join(__dirname, 'KORIS_Full_Stack', 'frontend', req.params.splat || 'index.html');
-  res.sendFile(filePath, (err) => {
-    if(err) res.sendFile(path.join(__dirname, 'KORIS_Full_Stack', 'frontend', 'index.html'));
-  });
-});
+app.use(express.static(path.join(__dirname, 'KORIS_Full_Stack', 'frontend')));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/orders', require('./routes/orders'));
+
+// Catch-all — must be AFTER routes
+app.get('/{*splat}', (req, res) => {
+  const filePath = path.join(__dirname, 'KORIS_Full_Stack', 'frontend', req.params.splat || 'index.html');
+  res.sendFile(filePath, (err) => {
+    if(err) res.sendFile(path.join(__dirname, 'KORIS_Full_Stack', 'frontend', 'index.html'));
+  });
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
