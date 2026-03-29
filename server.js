@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve frontend static files
-app.get('*', (req, res) => {
+app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'KORIS Full Stack/frontend', 'index.html'));
 });
 
