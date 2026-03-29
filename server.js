@@ -14,7 +14,10 @@ app.use(express.json());
 
 // Serve frontend static files
 app.get('/{*splat}', (req, res) => {
-  res.sendFile(path.join(__dirname, 'KORIS_Full_Stack/frontend', 'index.html'));
+  const filePath = path.join(__dirname, 'KORIS_Full_Stack', 'frontend', req.params.splat || 'index.html');
+  res.sendFile(filePath, (err) => {
+    if(err) res.sendFile(path.join(__dirname, 'KORIS_Full_Stack', 'frontend', 'index.html'));
+  });
 });
 
 // Routes
