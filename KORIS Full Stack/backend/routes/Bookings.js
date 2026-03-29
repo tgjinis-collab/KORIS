@@ -3,6 +3,18 @@ const router = express.Router();
 const Booking = require('../models/Booking');
 const auth = require('../middleware/auth');
 
+// GET /api/bookings/availability?barber=Alex P.&date=2026-04-01
+router.get('/availability', async (req, res) => {
+  try {
+    const { barber, date } = req.query;
+    const bookings = await Booking.find({ barber, date });
+    const bookedSlots = bookings.map(b => b.time);
+    res.json({ bookedSlots });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // CREATE booking
 router.post('/', auth, async (req, res) => {
   try {
