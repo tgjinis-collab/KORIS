@@ -125,7 +125,7 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 .svc-popup-icon{width:96px;height:96px;border-radius:50%;background:rgba(127,37,62,.12);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
 .svc-popup-icon img{width:52px;height:52px;object-fit:contain}
 .svc-popup h3{font-family:'Actor',sans-serif;font-size:30px;letter-spacing:1.5px;margin-bottom:6px}
-.svc-popup-price{display:inline-block;background:var(--dred);color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:14px;padding:5px 18px;border-radius:200px;margin-bottom:16px}
+.svc-popup-price{display:block;background:none;color:var(--red);font-family:'Inter',sans-serif;font-weight:700;font-size:18px;padding:0;border-radius:0;margin-bottom:16px}
 .svc-popup p{font-family:'Inter',sans-serif;font-size:17px;color:var(--muted);line-height:1.75;margin-bottom:18px;text-align:left}
 .svc-popup-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:18px;text-align:left}
 .svc-popup-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--ink)}
@@ -1760,7 +1760,6 @@ body{font-family:'Inter',sans-serif}
         <button class="pill" onclick="pickPill(this,'g1')">Teen Cut</button>
         <button class="pill" onclick="pickPill(this,'g1')">Kids Cut</button>
       </div>
-      <div id="svc-price-display" style="text-align:center;margin-top:12px;font-family:'Inter',sans-serif;font-weight:700;color:var(--red);font-size:16px">from €15</div>
       <button class="nxt" onclick="goStep(2)">Next &rarr;</button>
     </div>
 
@@ -2463,14 +2462,9 @@ function goStepBack(){
     if(el&&el.classList.contains('on')){if(i>1) goStep(i-1);return;}
   }
 }
-function pickPill(btn, gid){
+function pickPill(btn,gid){
   document.getElementById(gid).querySelectorAll('.pill').forEach(function(b){b.classList.remove('on')});
   btn.classList.add('on');
-  if(gid==='g1'){
-    var prices={'Haircut':'from €15','Beard Grooming':'from €12','Styling & Care':'from €18','Teen Cut':'from €12','Kids Cut':'from €10'};
-    var pd=document.getElementById('svc-price-display');
-    if(pd) pd.textContent=prices[btn.textContent.trim()]||'';
-  }
   loadAvailability();
 }
 async function loadAvailability(){
