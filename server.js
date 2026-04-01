@@ -21,6 +21,8 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/orders', require('./routes/orders'));
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Catch-all — must be AFTER routes
 app.get('/{*splat}', (req, res) => {
   const filePath = path.join(__dirname, 'KORIS_Full_Stack', 'frontend', req.params.splat || 'index.html');
