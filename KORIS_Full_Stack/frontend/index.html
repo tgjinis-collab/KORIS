@@ -125,7 +125,7 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 .svc-popup-icon{width:96px;height:96px;border-radius:50%;background:rgba(127,37,62,.12);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
 .svc-popup-icon img{width:52px;height:52px;object-fit:contain}
 .svc-popup h3{font-family:'Actor',sans-serif;font-size:30px;letter-spacing:1.5px;margin-bottom:6px}
-.svc-popup-price{display:inline-block;background:var(--dred);color:yellow;font-family:'Inter',sans-serif;font-weight:700;font-size:14px;padding:5px 18px;border-radius:200px;margin-bottom:16px}
+
 .svc-popup p{font-family:'Inter',sans-serif;font-size:17px;color:var(--muted);line-height:1.75;margin-bottom:18px;text-align:left}
 .svc-popup-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:18px;text-align:left}
 .svc-popup-list li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--ink)}
@@ -1077,7 +1077,7 @@ button,.btn-cta,.btn-outline,.btn-bk,.auth-btn,.auth-google,
 }
 
 /* Prices → Inter Bold, prominent */
-.prod-price,.svc-popup-price,.ci-price,.cart-total-row strong,
+.prod-price,.ci-price,.cart-total-row strong,
 .co-summary-price,.shop-card-p{
   font-family:'Inter',sans-serif;font-weight:700;color:var(--dred)
 }
@@ -2050,119 +2050,9 @@ function clearFilter(){
   document.getElementById('search-input').value='';
 }
 
-// ── FAVOURITES ───────────────────────────────────────
-function toggleFav(btn){
-  var card = btn.closest('.prod-card');
-  if(!card) return;
-  var name = card.querySelector('.prod-name') ? card.querySelector('.prod-name').textContent.trim() : '';
-  var price = card.querySelector('.prod-price') ? card.querySelector('.prod-price').textContent.trim() : '';
-  var img = card.querySelector('img') ? card.querySelector('img').src : '';
-  var isOn = btn.classList.contains('on');
-  btn.classList.toggle('on');
-  updateFavDrawer();
-  var count = document.querySelectorAll('.prod-fav.on').length;
-  var badge = document.getElementById('fav-count');
-  if(badge){
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'flex' : 'none';
-  }
-}
 
-function updateFavDrawer(){
-  var list = document.getElementById('fav-list');
-  if(!list) return;
-  list.innerHTML = '';
-  var favBtns = document.querySelectorAll('.prod-fav.on');
-  if(favBtns.length === 0){
-    list.innerHTML = '<p style="text-align:center;padding:40px 20px;color:var(--muted);font-size:15px">No favourites yet.<br>Tap the &#9825; on any product.</p>';
-    return;
-  }
-  favBtns.forEach(function(btn){
-    var card = btn.closest('.prod-card');
-    if(!card) return;
-    var name = card.querySelector('.prod-name') ? card.querySelector('.prod-name').textContent.trim() : 'Product';
-    var price = card.querySelector('.prod-price') ? card.querySelector('.prod-price').textContent.trim() : '';
-    var img = card.querySelector('img') ? card.querySelector('img').src : '';
-    var item = document.createElement('div');
-    item.className = 'fav-item';
-    item.innerHTML =
-      '<img class="fav-item-img" src="'+img+'" alt="'+name+'"/>'+
-      '<div class="fav-item-info">'+
-        '<div class="fav-item-name">'+name+'</div>'+
-        '<div class="fav-item-price">'+price+'</div>'+
-      '</div>'+
-      '<button class="fav-item-remove" data-fav-remove="true" title="Remove">&times;</button>';
-    list.appendChild(item);
-  });
-}
 
-function removeFav(removeBtn, productName){
-  // Find the matching prod-card and uncheck its heart
-  document.querySelectorAll('.prod-fav.on').forEach(function(btn){
-    var card = btn.closest('.prod-card');
-    if(card && card.querySelector('.prod-name') && card.querySelector('.prod-name').textContent.trim() === productName){
-      btn.classList.remove('on');
-    }
-  });
-  updateFavDrawer();
-  var count = document.querySelectorAll('.prod-fav.on').length;
-  var badge = document.getElementById('fav-count');
-  if(badge){
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'flex' : 'none';
-  }
-}
 
-function openFavDrawer(){
-  updateFavDrawer();
-  document.getElementById('fav-drawer').classList.add('open');
-  document.getElementById('fav-overlay').classList.add('open');
-}
-function closeFavDrawer(){
-  document.getElementById('fav-drawer').classList.remove('open');
-  document.getElementById('fav-overlay').classList.remove('open');
-}
-
-// ── CART ─────────────────────────────────────────────
-var cart=[];
-function openCart(){document.getElementById('cart-drawer').classList.add('open');document.getElementById('cart-overlay').classList.add('open')}
-function closeCart(){document.getElementById('cart-drawer').classList.remove('open');document.getElementById('cart-overlay').classList.remove('open')}
-function addToCart(name,price,img){
-  var idx=-1;
-  for(var i=0;i<cart.length;i++){if(cart[i].name===name){idx=i;break}}
-  if(idx>-1){cart[idx].qty+=1}else{cart.push({name:name,price:price,img:img,qty:1})}
-  renderCart();showToast(name+' added to cart');openCart();
-}
-function removeFromCart(idx){cart.splice(idx,1);renderCart()}
-function changeQty(idx,delta){
-  cart[idx].qty+=delta;
-  if(cart[idx].qty<1){cart.splice(idx,1)}
-  renderCart();
-}
-function renderCart(){
-  var container=document.getElementById('cart-items');
-  var footer=document.getElementById('cart-footer');
-  var badge=document.getElementById('cart-count');
-  var total=0,totalQty=0;
-  container.innerHTML='';
-  if(cart.length===0){
-    container.innerHTML='<div class="cart-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><p>Your cart is empty</p></div>';
-    footer.style.display='none';badge.textContent='0';return;
-  }
-  cart.forEach(function(item,i){
-    total+=item.price*item.qty;totalQty+=item.qty;
-    var el=document.createElement('div');el.className='cart-item';
-    el.innerHTML='<img src="'+item.img+'" alt="'+item.name+'"/>'+
-      '<div class="ci-info"><div class="ci-name">'+item.name+'</div>'+
-      '<div class="ci-price">&euro;'+item.price.toFixed(2)+'</div>'+
-      '<div class="ci-qty"><button onclick="changeQty('+i+',-1)">&#8722;</button><span>'+item.qty+'</span><button onclick="changeQty('+i+',1)">+</button></div></div>'+
-      '<button class="ci-rm" onclick="removeFromCart('+i+')">&#10005;</button>';
-    container.appendChild(el);
-  });
-  footer.style.display='block';
-  document.getElementById('cart-total').innerHTML='&euro;'+total.toFixed(2);
-  badge.textContent=totalQty;
-}
 
 // ── AUTH ─────────────────────────────────────────────
 function openAuth(){
@@ -2245,129 +2135,7 @@ function doLogout(){
 }
 
 
-/* ── CHECKOUT ─────────────────────────────────────────── */
-function startCheckout(){
-  if(!cart.length){showToast('Your cart is empty.');return;}
-  closeCart();
-  coGoStep(1);
-  // Populate summary
-  var list=document.getElementById('co-summary-items');
-  list.innerHTML='';
-  var total=0;
-  cart.forEach(function(item){
-    total+=item.price*item.qty;
-    var d=document.createElement('div');
-    d.className='co-summary-item';
-    d.innerHTML='<img src="'+item.img+'" alt="'+item.name+'"/>'
-      +'<div class="co-summary-info"><div class="co-summary-name">'+item.name+'</div>'
-      +'<div class="co-summary-qty">Qty: '+item.qty+'</div></div>'
-      +'<div class="co-summary-price">&euro;'+(item.price*item.qty).toFixed(2)+'</div>';
-    list.appendChild(d);
-  });
-  document.getElementById('co-subtotal').textContent='\u20ac'+total.toFixed(2);
-  document.getElementById('co-grand').textContent='\u20ac'+total.toFixed(2);
-  document.getElementById('co-pay-total').textContent='\u20ac'+total.toFixed(2);
-  var ov=document.getElementById('checkout-overlay');
-  ov.classList.add('open');
-}
-function closeCheckout(){
-  var ov=document.getElementById('checkout-overlay');
-  ov.classList.remove('open');
-}
-function coGoStep(n){
-  [1,2,3].forEach(function(i){
-    document.getElementById('co-panel-'+i).style.display=(i===n)?'block':'none';
-    var s=document.getElementById('cstep-'+i);
-    if(s){s.classList.toggle('on',i===n);s.classList.toggle('done',i<n);}
-  });
-  document.getElementById('co-panel-conf').style.display='none';
-}
-function coValidateDelivery(){
-  var fname=document.getElementById('co-fname').value.trim();
-  var addr=document.getElementById('co-addr').value.trim();
-  if(!fname||!addr){showToast('Please fill in your name and address.');return;}
-  coGoStep(3);
-}
-function fmtCard(el){
-  var v=el.value.replace(/\D/g,'').substring(0,16);
-  el.value=v.replace(/(.{4})/g,'$1 ').trim();
-  var disp=v.replace(/(.{4})/g,'$1 ').trim()||'\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022';
-  document.getElementById('co-card-display').textContent=disp;
-}
-function fmtExp(el){
-  var v=el.value.replace(/\D/g,'');
-  if(v.length>=3) v=v.substring(0,2)+'/'+v.substring(2,4);
-  el.value=v;
-  document.getElementById('co-card-exp-display').textContent=v||'MM/YY';
-}
-function coPlaceOrder(){
-  async function coPlaceOrder(){
-  var cnum = document.getElementById('co-cnum').value.replace(/\s/g,'');
-  var exp = document.getElementById('co-exp').value;
-  var cvv = document.getElementById('co-cvv').value;
-  if(cnum.length < 16 || !exp.includes('/') || cvv.length < 3){
-    showToast('Please enter valid card details.');
-    return;
-  }
 
-  var num = '#KR-' + (Math.floor(Math.random() * 9000) + 1000);
-  var itemsStr = cart.map(function(ci){ return ci.name + ' ×' + ci.qty; }).join(' · ');
-  var total = cart.reduce(function(s, ci){ return s + ci.price * ci.qty; }, 0);
-
-  if(authToken){
-    try {
-      await fetch(API + '/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + authToken
-        },
-        body: JSON.stringify({
-          items: cart.map(function(ci){
-            return { name: ci.name, price: ci.price, qty: ci.qty, img: ci.img };
-          }),
-          total: total
-        })
-      });
-    } catch(err){
-      console.log('Order save error:', err);
-    }
-  }
-
-  addOrderToProfile(num, itemsStr, total);
-  [1,2,3].forEach(function(i){ document.getElementById('co-panel-'+i).style.display='none'; });
-  [1,2,3].forEach(function(i){
-    document.getElementById('cstep-'+i).classList.remove('on');
-    document.getElementById('cstep-'+i).classList.add('done');
-  });
-  document.getElementById('co-panel-conf').style.display = 'block';
-  document.getElementById('co-conf-num').textContent = num;
-  cart = []; renderCart();
-}
-}
-
-function addOrderToProfile(num, items, total){
-  var list=document.querySelector('#profile-orders .order-list');
-  if(!list)return;
-  var empty=list.querySelector('p');
-  if(empty)empty.remove();
-  var now=new Date();
-  var dateStr=now.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()]+' '+now.getFullYear();
-  var card=document.createElement('div');
-  card.className='order-card';
-  card.setAttribute('data-order',num);
-  card.innerHTML=
-    '<div class="order-hd">'+
-      '<span class="order-num">'+num+'</span>'+
-      '<span class="order-status processing">Processing</span>'+
-    '</div>'+
-    '<div class="order-items">'+items+'</div>'+
-    '<div class="order-total">Total: \u20ac'+total.toFixed(2)+' \u00b7 '+dateStr+'</div>'+
-    '<button class="booking-cancel" style="margin-top:8px" data-cancel="order">Cancel Order</button>';
-  list.insertBefore(card,list.firstChild);
-}
-
-function toggleFavourites(){ openFavDrawer(); }
 
 /* ── PROFILE PANELS ───────────────────────────────────── */
 function showProfilePanel(name){
@@ -2413,12 +2181,6 @@ function cancelCard(btn, cardClass, emptyMsg){
 document.addEventListener('click', function(e){
   if(e.target&&e.target.getAttribute('data-cancel')==='booking'){
     cancelCard(e.target,'booking-card','No upcoming bookings.');
-  }
-  if(e.target&&e.target.dataset&&e.target.dataset.favRemove){
-    var row=e.target.closest('.fav-item');
-    var nameEl=row?row.querySelector('.fav-item-name'):null;
-    if(nameEl) removeFav(e.target, nameEl.textContent.trim());
-    return;
   }
   if(e.target&&e.target.getAttribute('data-cancel')==='order'){
     cancelCard(e.target,'order-card','No orders yet.');
