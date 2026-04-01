@@ -2558,7 +2558,7 @@ async function confirmBook(){
 
   // Check for double booking
   try{
-    var checkRes=await fetch('http://localhost:5000/api/bookings/availability?barber='+encodeURIComponent(brbrName)+'&date='+encodeURIComponent(calVal));
+    var checkRes=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(brbrName)+'&date='+encodeURIComponent(calVal));
     var checkData=await checkRes.json();
     if(checkData.bookedSlots&&checkData.bookedSlots.includes(timeVal)){
       showToast('That slot is already booked. Please choose another time.');return;
@@ -2568,7 +2568,7 @@ async function confirmBook(){
   // Save to backend
   if(authToken){
     try{
-      await fetch('http://localhost:5000/api/bookings',{
+      await fetch(API+'/api/bookings',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
         body:JSON.stringify({service:svcName,barber:brbrName,date:calVal,time:timeVal,name:name,phone:phone})
