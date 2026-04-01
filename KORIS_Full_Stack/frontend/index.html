@@ -114,7 +114,7 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 .svc-item.sel .svc-circle,.svc-circle:hover{border-color:var(--red);background:rgba(127,37,62,.2);transform:translateY(-4px)}
 .svc-circle img,.svc-circle svg{width:68px;height:68px;object-fit:contain}
 .svc-lbl{font-family:'Actor',sans-serif;font-size:15px;border:2px solid var(--dred);padding:4px 12px;border-radius:4px;white-space:nowrap;text-align:center}
-.svc-item.sel .svc-lbl{background:var(--dred);color:var(--cream)}
+.svc-lbl{border:none;}
 
 /* SERVICE POPUP */
 #svc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -1760,6 +1760,7 @@ body{font-family:'Inter',sans-serif}
         <button class="pill" onclick="pickPill(this,'g1')">Teen Cut</button>
         <button class="pill" onclick="pickPill(this,'g1')">Kids Cut</button>
       </div>
+      <div id="svc-price-display" style="text-align:center;margin-top:12px;font-family:'Inter',sans-serif;font-weight:700;color:var(--red);font-size:16px">from €15</div>
       <button class="nxt" onclick="goStep(2)">Next &rarr;</button>
     </div>
 
@@ -2462,9 +2463,14 @@ function goStepBack(){
     if(el&&el.classList.contains('on')){if(i>1) goStep(i-1);return;}
   }
 }
-function pickPill(btn,gid){
+function pickPill(btn, gid){
   document.getElementById(gid).querySelectorAll('.pill').forEach(function(b){b.classList.remove('on')});
   btn.classList.add('on');
+  if(gid==='g1'){
+    var prices={'Haircut':'from €15','Beard Grooming':'from €12','Styling & Care':'from €18','Teen Cut':'from €12','Kids Cut':'from €10'};
+    var pd=document.getElementById('svc-price-display');
+    if(pd) pd.textContent=prices[btn.textContent.trim()]||'';
+  }
   loadAvailability();
 }
 async function loadAvailability(){
