@@ -2471,35 +2471,47 @@ async function loadAvailability(){
   var brbrEl=document.querySelector('#g2 .pill.on');
   var calDisp=document.getElementById('cal-display');
   var calVal=calDisp?calDisp.textContent.trim():'';
-  if(!brbrEl||!calVal||calVal.indexOf(' ')===-1)return;
+  if(!brbrEl||!calVal||calVal.split(' ').length<3)return;
   var barber=brbrEl.textContent.trim();
+
+  // Get current Greece time
+  var nowGreece=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Athens'}));
+  var todayGreece=new Date(nowGreece.getFullYear(),nowGreece.getMonth(),nowGreece.getDate());
+  var selectedDate=new Date(calVal);
+  var isToday=(selectedDate.getTime()===todayGreece.getTime());
+  var isSaturday=(selectedDate.getDay()===6);
+  var currentHour=nowGreece.getHours();
+  var currentMin=nowGreece.getMinutes();
+
+  // Saturday blocked slots
+  var saturdayClosedSlots=['15:00','16:00'];
+
   try{
-    var res=await fetch('http://localhost:5000/api/bookings/availability?barber='+encodeURIComponent(barber)+'&date='+encodeURIComponent(calVal));
+    var res=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(barber)+'&date='+encodeURIComponent(calVal));
     var data=await res.json();
     var bookedSlots=data.bookedSlots||[];
+
     document.querySelectorAll('#g3 .pill').forEach(function(pill){
-      // Hide slots outside Saturday hours
-      var saturdayClosedSlots=['15:00','16:00'];
-      var isSaturday=(new Date(calVal).getDay()===6);
-      document.querySelectorAll('#g3 .pill').forEach(function(pill){
-        var time=pill.textContent.trim();
-        var isBooked=bookedSlots.includes(time);
-        var isClosedOnSat=isSaturday&&saturdayClosedSlots.includes(time);
-        if(isBooked||isClosedOnSat){
-          pill.disabled=true;pill.classList.remove('on');
-          pill.style.opacity='0.35';pill.style.textDecoration='line-through';pill.style.cursor='not-allowed';
-        } else {
-          pill.disabled=false;
-          pill.style.opacity='';pill.style.textDecoration='';pill.style.cursor='';
-        }
-      });
       var time=pill.textContent.trim();
-      if(bookedSlots.includes(time)){
-        pill.disabled=true;pill.classList.remove('on');
-        pill.style.opacity='0.35';pill.style.textDecoration='line-through';pill.style.cursor='not-allowed';
+      var slotHour=parseInt(time.split(':')[0]);
+      var slotMin=parseInt(time.split(':')[1]);
+
+      // Check if slot is in the past for today
+      var isPast=isToday&&(slotHour<currentHour||(slotHour===currentHour&&slotMin<=currentMin));
+      var isBooked=bookedSlots.includes(time);
+      var isClosedOnSat=isSaturday&&saturdayClosedSlots.includes(time);
+
+      if(isBooked||isClosedOnSat||isPast){
+        pill.disabled=true;
+        pill.classList.remove('on');
+        pill.style.opacity='0.35';
+        pill.style.textDecoration='line-through';
+        pill.style.cursor='not-allowed';
       } else {
         pill.disabled=false;
-        pill.style.opacity='';pill.style.textDecoration='';pill.style.cursor='';
+        pill.style.opacity='';
+        pill.style.textDecoration='';
+        pill.style.cursor='';
       }
     });
   } catch(err){console.log('Could not load availability',err);}
@@ -2526,12 +2538,23 @@ async function confirmBook(){
   var timeVal=timeEl.textContent.trim();
   var meta=brbrName+' · '+calVal+' · '+timeVal;
 
-  // Block 15:00 and 16:00 on Saturdays
   var selectedDate=new Date(calVal);
   var dow=selectedDate.getDay();
-  if(dow===6&&(timeVal==='15:00'||timeVal==='16:00')){
-    showToast('Last booking on Saturday is 14:00.');return;
-  } 
+  var nowGreece=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Athens'}));
+  var todayGreece=new Date(nowGreece.getFullYear(),nowGreece.getMonth(),nowGreece.getDate());
+  var isToday=(selectedDate.getTime()===todayGreece.getTime());
+  if(isToday){
+    var slotHour=parseInt(timeVal.split(':')[0]);
+    var currentHour=nowGreece.getHours();
+    var currentMin=nowGreece.getMinutes();
+    if(slotHour<currentHour||(slotHour===currentHour&&nowGreece.getMinutes()<=currentMin)){
+      showToast('This time slot has already passed.');return;
+    }
+  }
+  if(dow===6&&(timeVal==='14:00'||timeVal==='15:00'||timeVal==='16:00')){{
+      showToast('Last booking on Saturday is 14:00.');return;
+    }
+  }   
 
   // Check for double booking
   try{
