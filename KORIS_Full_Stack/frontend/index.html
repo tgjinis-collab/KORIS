@@ -1750,8 +1750,18 @@ body{font-family:'Inter',sans-serif}
 
     <!-- Step indicators — moved to bottom -->
 
+    <!-- Step 0: Location -->
+    <div class="bstep on" id="bs0">
+      <div class="bstep-t">Choose a Location</div>
+      <div class="pills" id="g0">
+        <button class="pill on" onclick="pickLocation(this,'Piraeus')">Piraeus</button>
+        <button class="pill" onclick="pickLocation(this,'Kolonaki')">Kolonaki</button>
+      </div>
+      <button class="nxt" onclick="goStep(1)">Next &rarr;</button>
+    </div>
+
     <!-- Step 1: Service -->
-    <div class="bstep on" id="bs1">
+    <div class="bstep" id="bs1">
       <div class="bstep-t">Choose a Service</div>
       <div class="pills" id="g1">
         <button class="pill on" onclick="pickPill(this,'g1')">Haircut</button>
@@ -1836,7 +1846,9 @@ body{font-family:'Inter',sans-serif}
       </div>
     </div>
     <div class="steps" id="bs-steps" style="display:flex">
-      <div class="sdot on" id="sd1"></div>
+      <div class="sdot on" id="sd0"></div>
+      <div class="sdash"></div>
+      <div class="sdot" id="sd1"></div>
       <div class="sdash"></div>
       <div class="sdot" id="sd2"></div>
       <div class="sdash"></div>
@@ -2201,27 +2213,61 @@ function nlSubscribe(){
 
 
 // ── BOOKING MODAL ───────────────────────────────────
-var STEP_TITLES = {1:'Book Appointment',2:'Book Appointment',3:'Book Appointment',4:'Book Appointment',5:'Booking Confirmed'};
-function openModal(){document.getElementById('modal-bg').classList.add('open');goStep(1);buildCal()}
+var selectedLocation = 'Piraeus';
+var LOCATION_DATA = {
+  'Piraeus': {
+    barbers: ['Alex P.', 'Nikos S.', 'Aggeliki K.', 'Giorgos L.'],
+    closedDays: [0, 1],
+    saturdayBlockedSlots: ['15:00', '16:00']
+  },
+  'Kolonaki': {
+    barbers: ['Christos G.', 'Nikoleta A.', 'Odysseas F.'],
+    closedDays: [0, 6],
+    saturdayBlockedSlots: []
+  }
+};
+function pickLocation(btn, location){
+  document.querySelectorAll('#g0 .pill').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  selectedLocation = location;
+  var locData = LOCATION_DATA[location];
+  var g2 = document.getElementById('g2');
+  g2.innerHTML = '';
+  locData.barbers.forEach(function(name, i){
+    var b = document.createElement('button');
+    b.className = 'pill' + (i===0 ? ' on' : '');
+    b.textContent = name;
+    b.onclick = function(){ pickPill(this,'g2'); };
+    g2.appendChild(b);
+  });
+  var anyBtn = document.createElement('button');
+  anyBtn.className = 'pill';
+  anyBtn.textContent = 'Any Available';
+  anyBtn.onclick = function(){ pickPill(this,'g2'); };
+  g2.appendChild(anyBtn);
+  buildCal();
+}
+var STEP_TITLES = {0:'Book Appointment',1:'Book Appointment',2:'Book Appointment',3:'Book Appointment',4:'Book Appointment',5:'Booking Confirmed'};
+function openModal(){document.getElementById('modal-bg').classList.add('open');goStep(0);buildCal()}
 function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
 function bgClose(e){if(e.target===document.getElementById('modal-bg'))closeModal()}
 function goStep(n){
-  [1,2,3,4,5].forEach(function(i){
+  [0,1,2,3,4,5].forEach(function(i){
     document.getElementById('bs'+i).classList.toggle('on',i===n);
     var sd=document.getElementById('sd'+i);
     if(sd) sd.classList.toggle('on',i<=n);
   });
   var backBtn=document.getElementById('modal-back-btn');
-  if(backBtn) backBtn.style.visibility=(n>1&&n<5)?'visible':'hidden';
+  if(backBtn) backBtn.style.visibility=(n>0&&n<5)?'visible':'hidden';
   var titleEl=document.getElementById('modal-title');
   if(titleEl) titleEl.textContent=STEP_TITLES[n]||'Book Appointment';
   var steps=document.getElementById('bs-steps');
   if(steps) steps.style.display=(n===5)?'none':'flex';
 }
 function goStepBack(){
-  for(var i=1;i<=4;i++){
+  for(var i=0;i<=4;i++){
     var el=document.getElementById('bs'+i);
-    if(el&&el.classList.contains('on')){if(i>1) goStep(i-1);return;}
+    if(el&&el.classList.contains('on')){if(i>0) goStep(i-1);return;}
   }
 }
 function pickPill(btn,gid){
@@ -2246,10 +2292,11 @@ async function loadAvailability(){
   var currentMin=nowGreece.getMinutes();
 
   // Saturday blocked slots
-  var saturdayClosedSlots=['15:00','16:00'];
+  var locData=LOCATION_DATA[selectedLocation]||LOCATION_DATA['Piraeus'];
+  var saturdayClosedSlots=locData.saturdayBlockedSlots;
 
   try{
-    var res=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(barber)+'&date='+encodeURIComponent(calVal));
+    var res=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(barber)+'&date='+encodeURIComponent(calVal)+'&location='+encodeURIComponent(selectedLocation));
     var data=await res.json();
     var bookedSlots=data.bookedSlots||[];
 
@@ -2313,14 +2360,14 @@ async function confirmBook(){
       showToast('This time slot has already passed.');return;
     }
   }
-  if(dow===6&&(timeVal==='14:00'||timeVal==='15:00'||timeVal==='16:00')){{
-      showToast('Last booking on Saturday is 14:00.');return;
-    }
-  }   
+  var locData=LOCATION_DATA[selectedLocation]||LOCATION_DATA['Piraeus'];
+  if(dow===6&&locData.saturdayBlockedSlots.indexOf(timeVal)!==-1){
+    showToast('Last booking on Saturday is 14:00.');return;
+  }
 
   // Check for double booking
   try{
-    var checkRes=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(brbrName)+'&date='+encodeURIComponent(calVal));
+    var checkRes=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(brbrName)+'&date='+encodeURIComponent(calVal)+'&location='+encodeURIComponent(selectedLocation));
     var checkData=await checkRes.json();
     if(checkData.bookedSlots&&checkData.bookedSlots.includes(timeVal)){
       showToast('That slot is already booked. Please choose another time.');return;
@@ -2333,7 +2380,7 @@ async function confirmBook(){
       await fetch(API+'/api/bookings',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-        body:JSON.stringify({service:svcName,barber:brbrName,date:calVal,time:timeVal,name:name,phone:phone})
+        body:JSON.stringify({service:svcName,barber:brbrName,date:calVal,time:timeVal,name:name,phone:phone,location:selectedLocation})
       });
     } catch(err){console.log('Booking save error',err);}
   }
@@ -2341,6 +2388,7 @@ async function confirmBook(){
   var details=document.getElementById('confirm-details');
   if(details){
     details.innerHTML=
+      '<div class="confirm-row"><div class="confirm-row-icon">📍</div><span><strong>'+selectedLocation+'</strong></span></div>'+
       '<div class="confirm-row"><div class="confirm-row-icon">✂</div><span><strong>'+svcName+'</strong></span></div>'+
       '<div class="confirm-row"><div class="confirm-row-icon">👤</div><span>'+brbrName+'</span></div>'+
       '<div class="confirm-row"><div class="confirm-row-icon">📅</div><span>'+calVal+'</span></div>'+
@@ -2458,7 +2506,8 @@ function buildCal(){
     var b=document.createElement('div');b.className='cd';b.textContent=i;
     var cellDate=new Date(calYear,calMonth,i);
     var dow=cellDate.getDay(); // 0=Sun, 1=Mon
-    var isClosed=(dow===0||dow===1);
+    var locData=LOCATION_DATA[selectedLocation]||LOCATION_DATA['Piraeus'];
+    var isClosed=locData.closedDays.indexOf(dow)!==-1;
     if(calYear===today.getFullYear()&&calMonth===today.getMonth()&&i===today.getDate())b.classList.add('today');
     if(cellDate<today||isClosed){
       b.classList.add('past');

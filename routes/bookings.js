@@ -3,11 +3,13 @@ const router = express.Router();
 const Booking = require('../models/Booking');
 const auth = require('../middleware/auth');
 
-// GET /api/bookings/availability?barber=Alex P.&date=2026-04-01
+// GET /api/bookings/availability?barber=Alex P.&date=2026-04-01&location=Piraeus
 router.get('/availability', async (req, res) => {
   try {
-    const { barber, date } = req.query;
-    const bookings = await Booking.find({ barber, date });
+    const { barber, date, location } = req.query;
+    const query = { barber, date };
+    if (location) query.location = location;
+    const bookings = await Booking.find(query);
     const bookedSlots = bookings.map(b => b.time);
     res.json({ bookedSlots });
   } catch (err) {
@@ -18,13 +20,14 @@ router.get('/availability', async (req, res) => {
 // CREATE booking
 router.post('/', auth, async (req, res) => {
   try {
-    const { service, barber, date, time } = req.body;
+    const { service, barber, date, time, location } = req.body;
     const booking = await Booking.create({
       user: req.user.id,
       service,
       barber,
       date,
-      time
+      time,
+      location: location || 'Piraeus'
     });
     res.json(booking);
   } catch (err) {
