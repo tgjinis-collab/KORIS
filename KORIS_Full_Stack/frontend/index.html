@@ -151,6 +151,15 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 /* BARBERS */
 .brb-sec{padding:72px 44px}
 .brb-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;max-width:1320px;margin:0 auto}
+.brb-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:990px;margin:0 auto}
+.loc-name{font-family:'Abril Fatface',cursive;font-size:30px;color:var(--red);font-style:italic;letter-spacing:1px;text-align:center;margin-bottom:40px;display:block}
+.loc-wrap{position:relative;max-width:1320px;margin:0 auto;padding:0 60px}
+.loc-arrow{position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--red);font-size:52px;cursor:pointer;line-height:1;padding:0;transition:opacity .2s;font-family:'Actor',sans-serif;z-index:2}
+.loc-arrow.l{left:0}
+.loc-arrow.r{right:0}
+.loc-arrow:hover{opacity:.55}
+.loc-fade{animation:locFade .3s ease}
+@keyframes locFade{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
 .brb-card{text-align:center}
 .brb-card img{width:100%;aspect-ratio:3/4;object-fit:cover;filter:grayscale(25%);transition:filter .3s,transform .3s}
 .brb-card:hover img{filter:grayscale(0);transform:scale(1.02)}
@@ -168,10 +177,20 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 .btn-outline:hover{background:var(--cream);color:var(--dred)}
 
 /* ABOUT */
-.about-sec{max-width:1320px;margin:0 auto;padding:0 52px 80px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
+.about-sec{max-width:1200px;margin:0 auto;padding:0 52px 80px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
 .about-sec h2{font-family:'Actor',sans-serif;font-size:30px;letter-spacing:2px;margin-bottom:20px}
 .about-sec img.shop-img{width:100%;border-radius:14px;aspect-ratio:4/3;object-fit:cover}
 .about-map{width:100%;aspect-ratio:4/3;border-radius:14px;border:none;position:relative;z-index:0;isolation:isolate}
+#about-map .leaflet-pane,
+#about-map .leaflet-top,
+#about-map .leaflet-bottom,
+#about-map .leaflet-control{z-index:auto}
+.contact-info-row{display:flex;align-items:flex-start;gap:28px;margin-top:18px;flex-wrap:nowrap}
+.contact-rows{display:flex;flex-direction:column;gap:7px}
+.contact-rows p{font-size:14px;display:flex;align-items:center;gap:8px}
+.contact-rows a{color:var(--red);text-decoration:underline}
+.hours-box{font-family:'Inter',sans-serif;font-size:11px;font-weight:400;line-height:1.4;color:var(--muted);display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:0;margin-left:auto}
+
 /* Keep all Leaflet layers inside their container stacking context */
 #about-map .leaflet-pane,
 #about-map .leaflet-top,
@@ -1564,7 +1583,13 @@ body{font-family:'Inter',sans-serif}
 <!-- BARBERS -->
 <section class="brb-sec" id="barbers">
   <h2 class="sec-h">Our Barbers</h2>
-  <div class="brb-grid">
+  <span class="loc-name" id="barbers-loc-name">/ Piraeus</span>
+  <div class="loc-wrap">
+    <button class="loc-arrow l" onclick="switchBarbersLoc(-1)">&#8249;</button>
+    <button class="loc-arrow r" onclick="switchBarbersLoc(1)">&#8250;</button>
+
+  <!-- Piraeus barbers -->
+  <div class="brb-grid" id="barbers-piraeus">
     <div class="brb-card">
       <img src="images/barber1.png" alt="Alex P."/>
       <div class="brb-name">Alex P.</div>
@@ -1586,6 +1611,26 @@ body{font-family:'Inter',sans-serif}
       <div class="brb-role">Junior Barber &middot; 3 yrs</div>
     </div>
   </div>
+
+  <!-- Kolonaki barbers (hidden by default) -->
+  <div class="brb-grid-3" id="barbers-kolonaki" style="display:none">
+    <div class="brb-card">
+      <img src="images/barber5.png" alt="Christos G."/>
+      <div class="brb-name">Christos G.</div>
+      <div class="brb-role">Head Barber &middot; 10 yrs</div>
+    </div>
+    <div class="brb-card">
+      <img src="images/barber6.png" alt="Nikoleta A."/>
+      <div class="brb-name">Nikoleta A.</div>
+      <div class="brb-role">Style Specialist &middot; 6 yrs</div>
+    </div>
+    <div class="brb-card">
+      <img src="images/barber7.png" alt="Odysseas F."/>
+      <div class="brb-name">Odysseas F.</div>
+      <div class="brb-role">Barber &middot; 4 yrs</div>
+    </div>
+  </div>
+  </div>
 </section>
 
 <!-- CTA BAND -->
@@ -1597,9 +1642,15 @@ body{font-family:'Inter',sans-serif}
 <!-- THE BARBERSHOP -->
 <section id="about">
   <h2 class="sec-h" style="padding-top:72px">The Barbershop</h2>
-  <div class="about-sec">
+  <span class="loc-name" id="about-loc-name">/ Piraeus</span>
+  <div class="loc-wrap" style="padding:0 70px">
+    <button class="loc-arrow l" onclick="switchAboutLoc(-1)">&#8249;</button>
+    <button class="loc-arrow r" onclick="switchAboutLoc(1)">&#8250;</button>
+
+  <!-- Piraeus about -->
+  <div class="about-sec" id="about-piraeus">
     <div>
-      <img class="shop-img" src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1000&q=85" alt="KORIS Interior"/>
+      <img class="shop-img" src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1000&q=85" alt="KORIS Piraeus Interior"/>
     </div>
     <div>
       <div id="about-map" class="about-map" style="position:relative">
@@ -1620,30 +1671,20 @@ body{font-family:'Inter',sans-serif}
       <script>
       (function(){
         var head = document.head;
-        // Load Leaflet CSS
         var lCss = document.createElement('link');
         lCss.rel = 'stylesheet';
         lCss.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
         head.appendChild(lCss);
-        // Load Leaflet JS then init map
         var lJs = document.createElement('script');
         lJs.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
         lJs.onload = function(){
           var lat = 37.9422, lng = 23.6467;
           var map = L.map('about-map', {
-            center: [lat, lng],
-            zoom: 14,
-            dragging: false,
-            scrollWheelZoom: false,
-            doubleClickZoom: true,
-            boxZoom: false,
-            keyboard: false,
-            touchZoom: 'center',
-            tap: false,
-            minZoom: 10,
-            maxZoom: 18
+            center: [lat, lng], zoom: 14,
+            dragging: false, scrollWheelZoom: false, doubleClickZoom: true,
+            boxZoom: false, keyboard: false, touchZoom: 'center', tap: false,
+            minZoom: 10, maxZoom: 18
           });
-          // Enable scroll zoom only when map is focused (clicked), disable on blur
           var hint = document.getElementById('map-hint');
           map.getContainer().addEventListener('click', function(){
             map.scrollWheelZoom.enable();
@@ -1658,27 +1699,61 @@ body{font-family:'Inter',sans-serif}
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           }).addTo(map);
-          // Custom dark-red marker matching brand
           var icon = L.divIcon({
             className: '',
             html: '<div style="width:16px;height:16px;background:#530303;border:3px solid #FFFCF7;border-radius:50%;box-shadow:0 2px 8px rgba(83,3,3,.5)"></div>',
-            iconSize: [16,16],
-            iconAnchor: [8,8]
+            iconSize: [16,16], iconAnchor: [8,8]
           });
           L.marker([lat, lng], {icon: icon}).addTo(map)
-            .bindPopup('<strong style="font-family:Actor,sans-serif;letter-spacing:1px">KŌRĪS Barbershop</strong><br><span style="font-size:12px;color:#646161">Piraeus, Athens</span>')
+            .bindPopup('<strong style="font-family:Actor,sans-serif;letter-spacing:1px">K&#x14C;R&#x12A;S Barbershop</strong><br><span style="font-size:12px;color:#646161">Piraeus, Athens</span>')
             .openPopup();
-          // Lock center on every move — user can zoom but not pan
           map.on('drag', function(){ map.panTo([lat, lng]); });
           map.on('moveend', function(){
             var c = map.getCenter();
-            if(Math.abs(c.lat - lat) > 0.001 || Math.abs(c.lng - lng) > 0.001){
+            if(Math.abs(c.lat - lat) > 0.001 || Math.abs(c.lng - lng) > 0.001)
               map.panTo([lat, lng], {animate: true, duration: 0.3});
-            }
           });
         };
         head.appendChild(lJs);
       })();
+
+      function initKolonakiMap(){
+        var lat2 = 37.9797, lng2 = 23.7454;
+        var map2 = L.map('kolonaki-map', {
+          center: [lat2, lng2], zoom: 14,
+          dragging: false, scrollWheelZoom: false, doubleClickZoom: true,
+          boxZoom: false, keyboard: false, touchZoom: 'center', tap: false,
+          minZoom: 10, maxZoom: 18
+        });
+        var hint2 = document.getElementById('kolonaki-map-hint');
+        map2.getContainer().addEventListener('click', function(){
+          map2.scrollWheelZoom.enable();
+          if(hint2) hint2.style.opacity = '0';
+        });
+        document.addEventListener('click', function(e){
+          if(!map2.getContainer().contains(e.target)){
+            map2.scrollWheelZoom.disable();
+            if(hint2) hint2.style.opacity = '1';
+          }
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map2);
+        var icon2 = L.divIcon({
+          className: '',
+          html: '<div style="width:16px;height:16px;background:#530303;border:3px solid #FFFCF7;border-radius:50%;box-shadow:0 2px 8px rgba(83,3,3,.5)"></div>',
+          iconSize: [16,16], iconAnchor: [8,8]
+        });
+        L.marker([lat2, lng2], {icon: icon2}).addTo(map2)
+          .bindPopup('<strong style="font-family:Actor,sans-serif;letter-spacing:1px">K&#x14C;R&#x12A;S Barbershop</strong><br><span style="font-size:12px;color:#646161">Kolonaki, Athens</span>')
+          .openPopup();
+        map2.on('drag', function(){ map2.panTo([lat2, lng2]); });
+        map2.on('moveend', function(){
+          var c = map2.getCenter();
+          if(Math.abs(c.lat - lat2) > 0.001 || Math.abs(c.lng - lng2) > 0.001)
+            map2.panTo([lat2, lng2], {animate: true, duration: 0.3});
+        });
+      }
       </script>
       <div class="contact-info-row">
         <div class="contact-rows">
@@ -1689,6 +1764,39 @@ body{font-family:'Inter',sans-serif}
       </div>
     </div>
   </div>
+
+  <!-- Kolonaki about (hidden by default) -->
+  <div class="about-sec" id="about-kolonaki" style="display:none">
+    <div>
+      <img class="shop-img" src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1000&q=85" alt="KORIS Kolonaki Interior"/>
+    </div>
+    <div>
+      <div id="kolonaki-map" class="about-map" style="position:relative">
+        <div id="kolonaki-map-hint" style="
+          position:absolute;inset:0;z-index:1000;
+          display:flex;align-items:center;justify-content:center;
+          background:rgba(56,43,35,.35);border-radius:14px;
+          pointer-events:none;transition:opacity .3s;
+        ">
+          <span style="
+            font-family:'Inter',sans-serif;font-size:12px;font-weight:700;
+            letter-spacing:.6px;text-transform:uppercase;
+            color:#fff;background:rgba(0,0,0,.45);
+            padding:7px 16px;border-radius:200px;
+          ">Click to zoom</span>
+        </div>
+      </div>
+      <div class="contact-info-row">
+        <div class="contact-rows">
+          <p>&#127760; <a href="#">koris_brbrshop.com</a></p>
+          <p>&#128222; <a href="tel:+306997845322">6997845322</a></p>
+        </div>
+        <div class="hours-box"><span>Mon&ndash;Fri</span><span>09:00&ndash;17:00</span><span>Sat/Sun</span><span>Closed</span></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
 </section>
 
 <!-- FOOTER -->
@@ -2481,6 +2589,40 @@ function openSvc(key){
   document.body.style.overflow='hidden';
 }
 function closeSvc(){document.getElementById('svc-overlay').classList.remove('open');document.body.style.overflow='';}
+
+// ── LOCATION SWITCHER ──────────────────────────────
+var barbersLocIdx=0;
+var barbersLocs=[
+  {name:'Piraeus',id:'barbers-piraeus'},
+  {name:'Kolonaki',id:'barbers-kolonaki'}
+];
+function switchBarbersLoc(dir){
+  document.getElementById(barbersLocs[barbersLocIdx].id).style.display='none';
+  barbersLocIdx=(barbersLocIdx+dir+barbersLocs.length)%barbersLocs.length;
+  var el=document.getElementById(barbersLocs[barbersLocIdx].id);
+  el.style.display='';
+  el.classList.remove('loc-fade');void el.offsetWidth;el.classList.add('loc-fade');
+  document.getElementById('barbers-loc-name').textContent=barbersLocs[barbersLocIdx].name;
+}
+var aboutLocIdx=0;
+var aboutLocs=[
+  {name:'Piraeus',id:'about-piraeus'},
+  {name:'Kolonaki',id:'about-kolonaki'}
+];
+var kolonakiMapReady=false;
+function switchAboutLoc(dir){
+  document.getElementById(aboutLocs[aboutLocIdx].id).style.display='none';
+  aboutLocIdx=(aboutLocIdx+dir+aboutLocs.length)%aboutLocs.length;
+  var el=document.getElementById(aboutLocs[aboutLocIdx].id);
+  el.style.display='';
+  el.classList.remove('loc-fade');void el.offsetWidth;el.classList.add('loc-fade');
+  document.getElementById('about-loc-name').textContent=aboutLocs[aboutLocIdx].name;
+  // Init Kolonaki map the first time it becomes visible
+  if(aboutLocIdx===1&&!kolonakiMapReady){
+    kolonakiMapReady=true;
+    setTimeout(initKolonakiMap,50);
+  }
+}
 
 // ── GALLERY ────────────────────────────────────────
 var gIdx=0,gTotal=4;
