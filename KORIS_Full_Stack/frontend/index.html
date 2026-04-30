@@ -151,6 +151,7 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 /* BARBERS */
 .brb-sec{padding:72px 44px}
 .brb-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;max-width:1320px;margin:0 auto}
+/* KOLONAKI-FEATURE-CSS
 .brb-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:990px;margin:0 auto}
 .loc-name{font-family:'Abril Fatface',cursive;font-size:30px;color:var(--red);font-style:italic;letter-spacing:1px;text-align:center;margin-bottom:40px;display:block}
 .loc-wrap{position:relative;max-width:1320px;margin:0 auto;padding:0 60px}
@@ -160,6 +161,7 @@ header{background:var(--dred);height:120px;padding:0 28px;display:flex;align-ite
 .loc-arrow:hover{opacity:.55}
 .loc-fade{animation:locFade .3s ease}
 @keyframes locFade{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+KOLONAKI-FEATURE-CSS */
 .brb-card{text-align:center}
 .brb-card img{width:100%;aspect-ratio:3/4;object-fit:cover;filter:grayscale(25%);transition:filter .3s,transform .3s}
 .brb-card:hover img{filter:grayscale(0);transform:scale(1.02)}
@@ -1583,11 +1585,13 @@ body{font-family:'Inter',sans-serif}
 <!-- BARBERS -->
 <section class="brb-sec" id="barbers">
   <h2 class="sec-h">Our Barbers</h2>
+<!-- KOLONAKI-BARBERS-NAV
   <span class="loc-name" id="barbers-loc-name">Piraeus</span>
   <div class="loc-wrap">
     <button class="loc-arrow l" onclick="switchBarbersLoc(-1)">&#8249;</button>
     <button class="loc-arrow r" onclick="switchBarbersLoc(1)">&#8250;</button>
 
+KOLONAKI-BARBERS-NAV -->
   <!-- Piraeus barbers -->
   <div class="brb-grid" id="barbers-piraeus">
     <div class="brb-card">
@@ -1612,6 +1616,7 @@ body{font-family:'Inter',sans-serif}
     </div>
   </div>
 
+<!-- KOLONAKI-BARBERS-GRID
   <!-- Kolonaki barbers (hidden by default) -->
   <div class="brb-grid-3" id="barbers-kolonaki" style="display:none">
     <div class="brb-card">
@@ -1631,6 +1636,7 @@ body{font-family:'Inter',sans-serif}
     </div>
   </div>
   </div>
+KOLONAKI-BARBERS-GRID -->
 </section>
 
 <!-- CTA BAND -->
@@ -1642,11 +1648,13 @@ body{font-family:'Inter',sans-serif}
 <!-- THE BARBERSHOP -->
 <section id="about">
   <h2 class="sec-h" style="padding-top:72px">The Barbershop</h2>
+<!-- KOLONAKI-ABOUT-NAV
   <span class="loc-name" id="about-loc-name">Piraeus</span>
   <div class="loc-wrap" style="padding:0 70px">
     <button class="loc-arrow l" onclick="switchAboutLoc(-1)">&#8249;</button>
     <button class="loc-arrow r" onclick="switchAboutLoc(1)">&#8250;</button>
 
+KOLONAKI-ABOUT-NAV -->
   <!-- Piraeus about -->
   <div class="about-sec" id="about-piraeus">
     <div>
@@ -1765,6 +1773,7 @@ body{font-family:'Inter',sans-serif}
     </div>
   </div>
 
+<!-- KOLONAKI-ABOUT-SECTION
   <!-- Kolonaki about (hidden by default) -->
   <div class="about-sec" id="about-kolonaki" style="display:none">
     <div>
@@ -1798,6 +1807,7 @@ body{font-family:'Inter',sans-serif}
   </div>
 
 </section>
+KOLONAKI-ABOUT-SECTION -->
 
 <!-- FOOTER -->
 </div>
@@ -1859,6 +1869,7 @@ body{font-family:'Inter',sans-serif}
     <!-- Step indicators — moved to bottom -->
 
     <!-- Step 0: Location -->
+<!-- KOLONAKI-BS0-STEP
     <div class="bstep on" id="bs0">
       <div class="bstep-t">Choose a Location</div>
       <div class="pills" id="g0">
@@ -1868,6 +1879,7 @@ body{font-family:'Inter',sans-serif}
       <button class="nxt" onclick="goStep(1)">Next &rarr;</button>
     </div>
 
+KOLONAKI-BS0-STEP -->
     <!-- Step 1: Service -->
     <div class="bstep" id="bs1">
       <div class="bstep-t">Choose a Service</div>
@@ -1954,8 +1966,6 @@ body{font-family:'Inter',sans-serif}
       </div>
     </div>
     <div class="steps" id="bs-steps" style="display:flex">
-      <div class="sdot on" id="sd0"></div>
-      <div class="sdash"></div>
       <div class="sdot" id="sd1"></div>
       <div class="sdash"></div>
       <div class="sdot" id="sd2"></div>
@@ -2321,6 +2331,7 @@ function nlSubscribe(){
 
 
 // ── BOOKING MODAL ───────────────────────────────────
+/* KOLONAKI-LOCATION-DATA-JS
 var selectedLocation = 'Piraeus';
 var LOCATION_DATA = {
   'Piraeus': {
@@ -2355,18 +2366,19 @@ function pickLocation(btn, location){
   g2.appendChild(anyBtn);
   buildCal();
 }
-var STEP_TITLES = {0:'Book Appointment',1:'Book Appointment',2:'Book Appointment',3:'Book Appointment',4:'Book Appointment',5:'Booking Confirmed'};
-function openModal(){document.getElementById('modal-bg').classList.add('open');goStep(0);buildCal()}
+KOLONAKI-LOCATION-DATA-JS */
+var STEP_TITLES = {1:'Book Appointment',2:'Book Appointment',3:'Book Appointment',4:'Book Appointment',5:'Booking Confirmed'};
+function openModal(){document.getElementById('modal-bg').classList.add('open');goStep(1);buildCal()}
 function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
 function bgClose(e){if(e.target===document.getElementById('modal-bg'))closeModal()}
 function goStep(n){
-  [0,1,2,3,4,5].forEach(function(i){
+  [1,2,3,4,5].forEach(function(i){
     document.getElementById('bs'+i).classList.toggle('on',i===n);
     var sd=document.getElementById('sd'+i);
     if(sd) sd.classList.toggle('on',i<=n);
   });
   var backBtn=document.getElementById('modal-back-btn');
-  if(backBtn) backBtn.style.visibility=(n>0&&n<5)?'visible':'hidden';
+  if(backBtn) backBtn.style.visibility=(n>1&&n<5)?'visible':'hidden';
   var titleEl=document.getElementById('modal-title');
   if(titleEl) titleEl.textContent=STEP_TITLES[n]||'Book Appointment';
   var steps=document.getElementById('bs-steps');
@@ -2375,7 +2387,7 @@ function goStep(n){
 function goStepBack(){
   for(var i=0;i<=4;i++){
     var el=document.getElementById('bs'+i);
-    if(el&&el.classList.contains('on')){if(i>0) goStep(i-1);return;}
+    if(el&&el.classList.contains('on')){if(i>1) goStep(i-1);return;}
   }
 }
 function pickPill(btn,gid){
@@ -2400,11 +2412,10 @@ async function loadAvailability(){
   var currentMin=nowGreece.getMinutes();
 
   // Saturday blocked slots
-  var locData=LOCATION_DATA[selectedLocation]||LOCATION_DATA['Piraeus'];
-  var saturdayClosedSlots=locData.saturdayBlockedSlots;
+  var saturdayClosedSlots=['15:00','16:00'];
 
   try{
-    var res=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(barber)+'&date='+encodeURIComponent(calVal)+'&location='+encodeURIComponent(selectedLocation));
+    var res=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(barber)+'&date='+encodeURIComponent(calVal)+'&location=Piraeus');
     var data=await res.json();
     var bookedSlots=data.bookedSlots||[];
 
@@ -2468,14 +2479,13 @@ async function confirmBook(){
       showToast('This time slot has already passed.');return;
     }
   }
-  var locData=LOCATION_DATA[selectedLocation]||LOCATION_DATA['Piraeus'];
-  if(dow===6&&locData.saturdayBlockedSlots.indexOf(timeVal)!==-1){
+  if(dow===6&&(['15:00','16:00'].indexOf(timeVal)!==-1)){
     showToast('Last booking on Saturday is 14:00.');return;
   }
 
   // Check for double booking
   try{
-    var checkRes=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(brbrName)+'&date='+encodeURIComponent(calVal)+'&location='+encodeURIComponent(selectedLocation));
+    var checkRes=await fetch(API+'/api/bookings/availability?barber='+encodeURIComponent(brbrName)+'&date='+encodeURIComponent(calVal)+'&location=Piraeus');
     var checkData=await checkRes.json();
     if(checkData.bookedSlots&&checkData.bookedSlots.includes(timeVal)){
       showToast('That slot is already booked. Please choose another time.');return;
@@ -2488,7 +2498,7 @@ async function confirmBook(){
       await fetch(API+'/api/bookings',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
-        body:JSON.stringify({service:svcName,barber:brbrName,date:calVal,time:timeVal,name:name,phone:phone,location:selectedLocation})
+        body:JSON.stringify({service:svcName,barber:brbrName,date:calVal,time:timeVal,name:name,phone:phone,location:'Piraeus'})
       });
     } catch(err){console.log('Booking save error',err);}
   }
@@ -2496,7 +2506,6 @@ async function confirmBook(){
   var details=document.getElementById('confirm-details');
   if(details){
     details.innerHTML=
-      '<div class="confirm-row"><div class="confirm-row-icon">📍</div><span><strong>'+selectedLocation+'</strong></span></div>'+
       '<div class="confirm-row"><div class="confirm-row-icon">✂</div><span><strong>'+svcName+'</strong></span></div>'+
       '<div class="confirm-row"><div class="confirm-row-icon">👤</div><span>'+brbrName+'</span></div>'+
       '<div class="confirm-row"><div class="confirm-row-icon">📅</div><span>'+calVal+'</span></div>'+
@@ -2590,6 +2599,7 @@ function openSvc(key){
 }
 function closeSvc(){document.getElementById('svc-overlay').classList.remove('open');document.body.style.overflow='';}
 
+/* KOLONAKI-SWITCHER-JS
 // ── LOCATION SWITCHER ──────────────────────────────
 var barbersLocIdx=0;
 var barbersLocs=[
@@ -2624,6 +2634,7 @@ function switchAboutLoc(dir){
   }
 }
 
+KOLONAKI-SWITCHER-JS */
 // ── GALLERY ────────────────────────────────────────
 var gIdx=0,gTotal=4;
 function gUpdate(){document.getElementById('gtrack').style.transform='translateX(-'+(gIdx*100)+'%)';document.querySelectorAll('#gdots span').forEach(function(d,i){d.classList.toggle('on',i===gIdx);});}
@@ -2648,8 +2659,7 @@ function buildCal(){
     var b=document.createElement('div');b.className='cd';b.textContent=i;
     var cellDate=new Date(calYear,calMonth,i);
     var dow=cellDate.getDay(); // 0=Sun, 1=Mon
-    var locData=LOCATION_DATA[selectedLocation]||LOCATION_DATA['Piraeus'];
-    var isClosed=locData.closedDays.indexOf(dow)!==-1;
+    var isClosed=(dow===0||dow===1);
     if(calYear===today.getFullYear()&&calMonth===today.getMonth()&&i===today.getDate())b.classList.add('today');
     if(cellDate<today||isClosed){
       b.classList.add('past');
